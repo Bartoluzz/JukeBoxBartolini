@@ -86,7 +86,7 @@ public class secondActivity extends AppCompatActivity {
 
 
     public void Yt(){
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(linkYt[getIntent().getIntExtra("Num",0)]));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(linkYt[getIntent().getIntExtra("Num",1)]));
         startActivity(intent);
     }
 
