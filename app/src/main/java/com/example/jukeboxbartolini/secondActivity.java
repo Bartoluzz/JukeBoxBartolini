@@ -1,6 +1,7 @@
 package com.example.jukeboxbartolini;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,6 +18,7 @@ import java.util.List;
 
 public class secondActivity extends AppCompatActivity {
 
+    MediaPlayer player;
 
     private Button bottoneYt;
 
@@ -44,8 +47,12 @@ public class secondActivity extends AppCompatActivity {
         "https://youtu.be/vo_XZmKlJ3A",
         "https://youtu.be/7ALoFoQbVrU",
         "https://youtu.be/OfjWhEV9NpE",
-        "https://youtu.be/o9vvbvcc3wo"
+        "https://youtu.be/o9vvbvcc3wo",
     };
+
+    ArrayList <Integer> songs = new ArrayList<>();
+
+
 
     TextView txt;
     TextView canzone;
@@ -86,7 +93,7 @@ public class secondActivity extends AppCompatActivity {
 
 
     public void Yt(){
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(linkYt[getIntent().getIntExtra("Num",1)]));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(linkYt[getIntent().getIntExtra("Num",0)]));
         startActivity(intent);
     }
 
@@ -96,5 +103,53 @@ public class secondActivity extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
+
+
+    public void play(View v){
+        if(player == null){
+            player = MediaPlayer.create(this, R.raw.pressure);
+            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    stopPlayer();
+                }
+            });
+        }
+
+        player.start();
+    }
+
+
+    public void pause(View v){
+
+        if(player != null){
+            player.pause();
+        }
+
+    }
+
+
+    public void stop(View v){
+        stopPlayer();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        stopPlayer();
+    }
+
+
+    public void stopPlayer(){
+        if(player != null){
+            player.release();
+            player = null;
+            Toast.makeText(this, "Memoria liberata", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
 
 }
