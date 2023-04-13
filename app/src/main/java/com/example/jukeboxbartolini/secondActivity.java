@@ -1,62 +1,47 @@
 package com.example.jukeboxbartolini;
-
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.app.Notification;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 public class secondActivity extends AppCompatActivity {
 
     MediaPlayer player;
 
     private Button bottoneYt;
-
-    //array dalla quale prendo l'indice delle canzoni per stamparlo
-    private String[] canzoni = new String[]{
-        "Staring At The Sun",
-        "Thousand Bad Times",
-        "Do It Right",
-        "Love Again",
-        "Come & Go",
-        "Never Sleep",
-        "Charlie Be Qiet",
-        "Chosen 1",
-        "High",
-        "Cash In Cash Out"
-    };
-
-    private String[] linkYt = {
-        "https://youtu.be/Wq6EeYFiAZU",
-        "https://youtu.be/ul-9U681Y2c",
-        "https://youtu.be/kcr3NC7fsKY",
-        "https://youtu.be/Mc-wFcieEmU",
-        "https://youtu.be/kcr3NC7fsKY",
-        "https://youtu.be/5Di20x6vVVU",
-        "https://youtu.be/BnsWBJnyJiQ",
-        "https://youtu.be/vo_XZmKlJ3A",
-        "https://youtu.be/7ALoFoQbVrU",
-        "https://youtu.be/OfjWhEV9NpE",
-        "https://youtu.be/o9vvbvcc3wo",
-    };
-
-    ArrayList <Integer> songs = new ArrayList<>();
-
-
+    Canzone[] c = Canzone.init();
 
     TextView txt;
     TextView canzone;
+    ImageView image;
 
+    NotificationManagerCompat notificationManagerCompat;
+    Notification notification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,21 +49,31 @@ public class secondActivity extends AppCompatActivity {
         setContentView(R.layout.activity_second);
         Bundle bundle = getIntent().getExtras();
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel("channel", "channel", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
 
 
         //codice per stampare il numero generato random nella main Activity
         txt = findViewById(R.id.textNumber);
         String numero = bundle.getString("String");
         if(numero!= null){
-            txt.setText(numero);
+            txt.setText(numero );
         }else{
             txt.setText("Errore");
             return;
         }
 
-        int songIndex = bundle.getInt("Num"); //recupero il valore sotto forma di numero per trovare il nome della canzone che voglio stampare
+        int Num = getIntent().getIntExtra("Num", 0); //recupero il valore sotto forma di numero per trovare il nome della canzone che voglio stampare
+
+        //setto il nome della canzone nella textview apposita
         canzone = findViewById(R.id.arrayCanzoni);
-        canzone.setText(canzoni[songIndex]);
+        canzone.setText(c[Num].nome);
+
+        image = findViewById(R.id.imageView);
+        image.setImageResource(c[Num].img);
 
         bottoneYt = findViewById(R.id.link);
         bottoneYt.setOnClickListener(new View.OnClickListener() {
@@ -89,11 +84,24 @@ public class secondActivity extends AppCompatActivity {
         });
 
 
+
     }
 
+    //non funge ---> sistemare
+    public void notification(View view) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "mianotifica");
+        builder.setContentTitle("Signora");
+        builder.setContentText("I LIMONIIIII");
+        builder.setSmallIcon(R.drawable.ic_launcher_background);
+        builder.setAutoCancel(true);
+
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
+        managerCompat.notify(1,builder.build());
+    }
 
     public void Yt(){
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(linkYt[getIntent().getIntExtra("Num",0)]));
+        int Num = getIntent().getIntExtra("Num",0);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(c[Num].link));//creo una nuova activity e apro il link della canzone
         startActivity(intent);
     }
 
@@ -107,13 +115,15 @@ public class secondActivity extends AppCompatActivity {
 
 
     public void play(View v){
+        int Num = getIntent().getIntExtra("Num",0);
         if(player == null){
-            player = MediaPlayer.create(this, R.raw.pressure);
+            player = MediaPlayer.create(this, c[Num].path);
             player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     stopPlayer();
                 }
+
             });
         }
 
