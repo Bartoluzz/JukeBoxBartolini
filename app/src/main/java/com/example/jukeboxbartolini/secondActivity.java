@@ -160,6 +160,13 @@ public class secondActivity extends AppCompatActivity {
     }
 
 
+    public void lyrics(View v){
+        int Num = getIntent().getIntExtra("Num",0);
+        Intent toThird = new Intent(secondActivity.this,Testo.class);
+        toThird.putExtra("titolo",c[Num].testo);
+        startActivity(toThird);
+    }
+
 
 
 }

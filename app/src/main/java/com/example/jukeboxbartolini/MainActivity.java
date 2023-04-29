@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //un range di numeri random
                 Random random = new Random();
-                int val = random.nextInt(10);
+                int val = random.nextInt(10)+1;
                 //txt.setText(Integer.toString(val));
 
                 //reindirizzo sulla nuova activity

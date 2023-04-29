@@ -13,7 +13,7 @@
         android:scaleType="centerCrop"
 
         android:src="@drawable/iconjukebox"
-        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteX="49dp"
         tools:layout_editor_absoluteY="0dp" />
 
     <TextView
@@ -111,14 +111,27 @@
         android:id="@+id/notifica"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Notifica"
         android:onClick="notification"
+        android:text="Notifica"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="@+id/imageView2"
-        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintHorizontal_bias="0.244"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.937" />
+        app:layout_constraintVertical_bias="0.935" />
+
+    <Button
+        android:id="@+id/testoCanzone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Testo"
+        android:onClick="lyrics"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/imageView2"
+        app:layout_constraintHorizontal_bias="0.753"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.935" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
