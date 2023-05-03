@@ -20,7 +20,7 @@ public class Testo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_testo);
 
-        testo = findViewById(R.id.testoCanzone);
+        testo = findViewById(R.id.testoSong);
 
         String titolo = getIntent().getStringExtra("titolo");
         String testoCanzone = "";
@@ -38,6 +38,12 @@ public class Testo extends AppCompatActivity {
 
         testo.setText(testoCanzone);
         testo.setMovementMethod(new ScrollingMovementMethod());
+    }
+
+    @Override
+    public boolean onSupportNavigateUp(){
+        onBackPressed();
+        return true;
     }
 
 }

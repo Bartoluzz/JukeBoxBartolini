@@ -10,6 +10,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,33 +29,26 @@ import androidx.core.app.NotificationManagerCompat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 
 public class secondActivity extends AppCompatActivity {
 
-    MediaPlayer player;
+    private MediaPlayer player;
+    private boolean isPrepared = false;
 
     private Button bottoneYt;
     Canzone[] c = Canzone.init();
 
-    TextView txt;
-    TextView canzone;
-    ImageView image;
+    private TextView txt, canzone;
+    private ImageView image;
 
-    NotificationManagerCompat notificationManagerCompat;
-    Notification notification;
+    private SeekBar seekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
         Bundle bundle = getIntent().getExtras();
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel channel = new NotificationChannel("channel", "channel", NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
-
 
         //codice per stampare il numero generato random nella main Activity
         txt = findViewById(R.id.textNumber);
@@ -85,18 +79,51 @@ public class secondActivity extends AppCompatActivity {
 
 
 
-    }
+        seekBar = findViewById(R.id.seekBar);
+        player = MediaPlayer.create(this,c[Num].path);
+        seekBar.setMax(player.getDuration());
 
-    //non funge ---> sistemare
-    public void notification(View view) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "mianotifica");
-        builder.setContentTitle("Signora");
-        builder.setContentText("I LIMONIIIII");
-        builder.setSmallIcon(R.drawable.ic_launcher_background);
-        builder.setAutoCancel(true);
 
-        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
-        managerCompat.notify(1,builder.build());
+        player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                isPrepared = true;
+                seekBar.setMax(player.getDuration());
+            }
+        });
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (isPrepared && player != null) {
+                    if (player.isPlaying() || player.getCurrentPosition() > 0) {
+                        seekBar.setProgress(player.getCurrentPosition());
+                    }
+                }
+            }
+
+        }, 0, 900);
+
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+                if(b) {
+                    player.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
     }
 
     public void Yt(){
@@ -107,9 +134,9 @@ public class secondActivity extends AppCompatActivity {
 
 
     @Override
-    public boolean onSupportNavigateUp(){
-        onBackPressed();
-        return true;
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
 
@@ -121,7 +148,7 @@ public class secondActivity extends AppCompatActivity {
             player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    stopPlayer();
+                    onStop();
                 }
 
             });
@@ -141,30 +168,30 @@ public class secondActivity extends AppCompatActivity {
 
 
     public void stop(View v){
-        stopPlayer();
-    }
-
-    @Override
-    public void onStop(){
         super.onStop();
-        stopPlayer();
+
     }
 
-
-    public void stopPlayer(){
-        if(player != null){
+    public void releasePlayer(){
+        try {
+            player.stop();
             player.release();
-            player = null;
-            Toast.makeText(this, "Memoria liberata", Toast.LENGTH_SHORT).show();
+        }catch (Exception e){
+
         }
+    }
+
+    protected void onDestroy(){
+        releasePlayer();
+        super.onDestroy();
     }
 
 
     public void lyrics(View v){
         int Num = getIntent().getIntExtra("Num",0);
-        Intent toThird = new Intent(secondActivity.this,Testo.class);
-        toThird.putExtra("titolo",c[Num].testo);
-        startActivity(toThird);
+        Intent intent = new Intent(secondActivity.this,Testo.class);
+        intent.putExtra("titolo",c[Num].testo);
+        startActivity(intent);
     }
 
 
