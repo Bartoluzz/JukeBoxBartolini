@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,6 +29,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -39,7 +41,7 @@ public class secondActivity extends AppCompatActivity {
     private Button bottoneYt;
     Canzone[] c = Canzone.init();
 
-    private TextView txt, canzone;
+    private TextView txt, canzone, indietro;
     private ImageView image;
 
     private SeekBar seekBar;
@@ -78,6 +80,7 @@ public class secondActivity extends AppCompatActivity {
         });
 
 
+        indietro = findViewById(R.id.button3);
 
         seekBar = findViewById(R.id.seekBar);
         player = MediaPlayer.create(this,c[Num].path);
@@ -133,13 +136,12 @@ public class secondActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+    public void onClick(View view) {
+        //reindirizzo sulla nuova activity
+        Intent toFirst = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(toFirst);
+
     }
-
-
 
     public void play(View v){
         int Num = getIntent().getIntExtra("Num",0);

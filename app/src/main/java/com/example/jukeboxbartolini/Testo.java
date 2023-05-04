@@ -46,4 +46,8 @@ public class Testo extends AppCompatActivity {
         return true;
     }
 
+    public void onDestroy(){
+        super.onDestroy();
+    }
+
 }
